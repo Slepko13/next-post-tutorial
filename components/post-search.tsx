@@ -2,8 +2,9 @@
 
 import React, {FormEventHandler, useState} from 'react';
 import {getPostsBySearch} from "@/services/get-posts";
-import {usePosts} from "@/store";
-import {shallow} from "zustand/shallow";
+// import {usePosts} from "@/store";
+// import {shallow} from "zustand/shallow";
+import useSWR from "swr";
 
 type Props = {
     onSearch: (value: any[]) => void;
@@ -11,11 +12,14 @@ type Props = {
 }
 
 const PostSearch = () => {
+    const  { mutate } = useSWR('posts' )
+
     const [search, setSearch] = useState<string>('')
-    const [getPostsBySearch] = usePosts(state => [state.getPostsBySearch], shallow);
+    // const [getPostsBySearch] = usePosts(state => [state.getPostsBySearch], shallow);
     const handleSubmit: FormEventHandler<HTMLFormElement> = async (event) => {
         event.preventDefault();
-         await getPostsBySearch(search)
+        const posts = await getPostsBySearch(search);
+        await mutate(posts)
     }
 
     return (
